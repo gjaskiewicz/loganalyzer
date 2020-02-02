@@ -21,3 +21,9 @@ To get help on command line args invoke:
 ```
   java -jar build/lib/logalert.jar -h
 ```
+
+## Testing
+To run tests invoke:
+```
+./gradlew test
+```
