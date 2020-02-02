@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.creditsuisse.loganalyzer.data.LogEntry;
 import com.creditsuisse.loganalyzer.db.DB;
+import com.creditsuisse.loganalyzer.testdata.TestData;
 
 public class AnalyzeTaskE2eTest {
 
@@ -20,19 +21,8 @@ public class AnalyzeTaskE2eTest {
     @BeforeClass
     public static void setup() throws IOException {
         dataFile = File.createTempFile("loganalyzer-e2e", "json");
-        for (int i = 0; i < 100; ++i) {
-            String jsonEntry = String.format(
-                "{\"id\":\"%s\", \"state\":\"%s\", \"timestamp\":%d}", 
-                "id" + i, LogEntry.State.STARTED, i);
-            FileUtils.writeStringToFile(dataFile, jsonEntry, StandardCharsets.UTF_8.name(), true);
-        }
-        for (int i = 0; i < 100; ++i) {
-            String jsonEntry = String.format(
-                "{\"id\":\"%s\", \"state\":\"%s\", \"timestamp\":%d}", 
-                "id" + i, LogEntry.State.FINISHED, 220 - i);
-            FileUtils.writeStringToFile(dataFile, jsonEntry, StandardCharsets.UTF_8.name(), true);
-        }
-        
+        TestData.fillTestLogs(dataFile);
+
         FileUtils.forceDeleteOnExit(dataFile);
     }
     

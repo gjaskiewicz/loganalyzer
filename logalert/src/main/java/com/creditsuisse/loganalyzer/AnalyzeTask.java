@@ -37,6 +37,7 @@ public class AnalyzeTask implements Callable<Void> {
     private ObjectMapper mapper;
     private ResultsCollector globalCollector;
     
+    private String dbName = DB.DEFAULT_DB_NAME;
     private Supplier<ILogStore> logStoreSupplier;
     // TODO: it would be better to have it in dependency injection framework, eg. Guice
 
@@ -56,10 +57,14 @@ public class AnalyzeTask implements Callable<Void> {
         this.logStoreSupplier = () -> provideDefaultDb();
     }
     
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+    
     private ILogStore provideDefaultDb() {
         DB db = new DB(); 
         try {
-            db.init();
+            db.init(dbName);
         } catch (SQLException e) {
             logger.error("Error while getting DB", e);
             return null;

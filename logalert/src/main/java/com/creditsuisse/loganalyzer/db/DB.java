@@ -20,13 +20,15 @@ import com.creditsuisse.loganalyzer.data.LogDuration;
  * HSQLDB class.
  */
 public class DB implements ILogStore {
+    public static final String DEFAULT_DB_NAME = "logsDb";
+    
     final static Logger logger = LoggerFactory.getLogger(DB.class);
     
     private Connection conn;
     
-    public void init() throws SQLException {
-        init("logsDb");
-    }
+    //public void init() throws SQLException {
+    //    init(DEFAULT_DB_NAME);
+    //}
     
     public void init(String dbFile) throws SQLException {
         conn = DriverManager.getConnection("jdbc:hsqldb:file:" + dbFile, "sa", "");

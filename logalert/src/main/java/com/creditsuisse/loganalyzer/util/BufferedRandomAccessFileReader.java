@@ -17,8 +17,11 @@ public class BufferedRandomAccessFileReader implements IPartialFileReader {
     }
     
     public String readUntilChar(char end, long maxIndex) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        if (raf.getFilePointer() >= maxIndex) {
+            return null;
+        }
         
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte c = ' ';
         do {
             // might be better to bulk-read byte array
@@ -38,6 +41,10 @@ public class BufferedRandomAccessFileReader implements IPartialFileReader {
     }
 
     public boolean skipUntilChar(char end, long maxIndex) throws IOException {
+        if (raf.getFilePointer() >= maxIndex) {
+            return false;
+        }
+        
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte c = ' ';
         do {

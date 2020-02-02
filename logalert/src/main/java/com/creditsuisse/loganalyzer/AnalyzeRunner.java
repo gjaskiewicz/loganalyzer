@@ -26,6 +26,7 @@ public class AnalyzeRunner {
         private Optional<Integer> segmentCount = Optional.empty();
         private long timeAlertThreshold = 4;
         private File fileToAnalyze;
+        private String dbName = DB.DEFAULT_DB_NAME;
         
         public Builder(File fileToAnalyze) {
             this.fileToAnalyze = fileToAnalyze;
@@ -46,12 +47,18 @@ public class AnalyzeRunner {
             return this;
         }
         
+        public Builder withDbName(String dbName) {
+            this.dbName = dbName;
+            return this;
+        }
+        
         public AnalyzeRunner build() {
             return new AnalyzeRunner(
                 fileToAnalyze,
                 threadNumber,
                 segmentCount.isPresent() ?  segmentCount.get() : threadNumber,
-                timeAlertThreshold
+                timeAlertThreshold,
+                dbName
             );
         }
     }
@@ -60,12 +67,19 @@ public class AnalyzeRunner {
     private int segmentCount;
     private long timeAlertThreshold;
     private File fileToAnalyze;
+    private String dbName;
 
-    public AnalyzeRunner(File fileToAnalyze, int threadNumber, int segmentCount, long timeAlertThreshold) {
+    public AnalyzeRunner(
+            File fileToAnalyze, 
+            int threadNumber, 
+            int segmentCount, 
+            long timeAlertThreshold,
+            String dbName) {
         this.fileToAnalyze = fileToAnalyze;
         this.threadNumber = threadNumber;
         this.segmentCount = segmentCount;
         this.timeAlertThreshold = timeAlertThreshold;
+        this.dbName = dbName;
     }
     
     public void analyzeFile() {
@@ -73,7 +87,7 @@ public class AnalyzeRunner {
         DB db = null;
         try {
             db = new DB();
-            db.init();
+            db.init(dbName);
             db.createDb();
             db.deleteRecords(); // TODO: could be some extra flag to clear database
             
@@ -81,7 +95,7 @@ public class AnalyzeRunner {
             
             executor = Executors.newFixedThreadPool(threadNumber);
             executor.invokeAll(IntStream.range(0, segmentCount)
-                .mapToObj(i -> new AnalyzeTask(i, segmentCount, timeAlertThreshold, fileToAnalyze, globalCollector))
+                .mapToObj(i -> createTask(i, globalCollector))
                 .collect(Collectors.toList()));
             
             logger.info("All workers finished");
@@ -99,5 +113,11 @@ public class AnalyzeRunner {
                 db.close();
             }
         }
+    }
+
+    private AnalyzeTask createTask(int workerNumber, ResultsCollector collector) {
+        AnalyzeTask task = new AnalyzeTask(workerNumber, segmentCount, timeAlertThreshold, fileToAnalyze, collector);
+        task.setDbName(dbName);
+        return task;
     }
 }
