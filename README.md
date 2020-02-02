@@ -12,7 +12,7 @@ In order to build invoke gradle wrapper.
 As output there is produced runnable jar.
 
 ## Running
-In order to invoke log analyzer run.
+In order to invoke log analyzer run:
 ```
   java -jar build/lib/logalert.jar [FILE]
 ```
