@@ -31,6 +31,14 @@ public class Entrypoint {
             .argName("THREADS")
             .build());
         
+        options.addOption(Option.builder("d")
+            .longOpt("dbname")
+            .desc("name of HSQLDB to use")
+            .hasArg()
+            .type(Number.class)
+            .argName("NAME")
+            .build());
+        
         options.addOption(Option.builder("a")
             .longOpt("alert")
             .desc("alert threshold to flag logs")
@@ -76,6 +84,11 @@ public class Entrypoint {
             if (cmd.hasOption('a')) {
                 long timeAlertThreshold = ((Number)cmd.getParsedOptionValue("a")).longValue();
                 analyzerBuilder.withTimeThreshold(timeAlertThreshold);
+            }
+            
+            if (cmd.hasOption('d')) {
+                String dbName = cmd.getOptionValue("d");
+                analyzerBuilder.withDbName(dbName);
             }
             
             AnalyzeRunner analyzer = analyzerBuilder.build();
