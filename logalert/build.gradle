@@ -1,5 +1,5 @@
-//group 'com.test' 
-//version '1.0-SNAPSHOT' 
+group 'com.creditsuisse.loganalyzer' 
+version '1.0-SNAPSHOT' 
 
 apply plugin: 'java' 
 
